@@ -1,0 +1,16 @@
+{
+  "name": "codex2cc",
+  "version": "0.1.0",
+  "description": "Minimal Anthropic Messages compatible gateway backed by Codex app-server",
+  "type": "module",
+  "bin": {
+    "codex-gateway": "./bin/codex-gateway.js"
+  },
+  "scripts": {
+    "start": "node ./bin/codex-gateway.js start"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
