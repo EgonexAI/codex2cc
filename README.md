@@ -47,7 +47,7 @@ If `~/.claude/settings.json` overrides the URL, run Claude with `--setting-sourc
 | Option                | Default           | Description                                                      |
 | --------------------- | ----------------- | ---------------------------------------------------------------- |
 | `GATEWAY_PORT`        | `8080`            | HTTP port                                                        |
-| `CODEX_PATH`          | `codex`           | Codex CLI path                                                   |
+| `CODEX_PATH`          | `codex`           | Codex CLI path (on Windows, auto-resolves `.exe` / `.cmd` / `.bat`) |
 | `CODEX_WORKDIR`       | cwd               | Working directory (where you run the gateway)                    |
 | `CODEX_SANDBOX`       | `workspace-write` | `read-only`, `workspace-write`, `danger-full-access`, `seatbelt` |
 | `DEFAULT_CODEX_MODEL` | `gpt-5.2`         | Fallback Codex model                                             |

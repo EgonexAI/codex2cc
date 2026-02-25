@@ -1,4 +1,7 @@
 import { spawn } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
 import readline from "node:readline";
 
 function messageFromJsonRpcError(error) {
@@ -30,6 +33,36 @@ function makeServerRequestUnsupportedError(method) {
     code: -32000,
     message: `Unsupported server request method: ${method}`
   };
+}
+
+function hasPathSeparator(command) {
+  return command.includes("/") || command.includes("\\");
+}
+
+function isRunnableFile(filePath) {
+  try {
+    return fs.statSync(filePath).isFile();
+  } catch {
+    return false;
+  }
+}
+
+function resolveWindowsCodexCommand(command, env = process.env) {
+  const pathEntries = (env.PATH ?? "").split(path.delimiter).filter(Boolean);
+  const hasExt = /\.[^\\/]+$/.test(command);
+  const suffixes = hasExt ? [""] : [".exe", ".cmd", ".bat"];
+  const basePaths = hasPathSeparator(command) ? [command] : pathEntries.map((entry) => path.join(entry, command));
+
+  for (const basePath of basePaths) {
+    for (const suffix of suffixes) {
+      const candidate = `${basePath}${suffix}`;
+      if (isRunnableFile(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  return command;
 }
 
 export class CodexAppServerClient {
@@ -149,9 +182,14 @@ export class CodexAppServerClient {
       return;
     }
 
-    const child = spawn(this.config.codexPath, ["app-server", "--listen", "stdio://"], {
+    const rawCommand = this.config.codexPath;
+    const command = process.platform === "win32" ? resolveWindowsCodexCommand(rawCommand) : rawCommand;
+    const useShell = process.platform === "win32" && /\.(cmd|bat)$/i.test(command);
+
+    const child = spawn(command, ["app-server", "--listen", "stdio://"], {
       cwd: this.config.workdir,
       env: process.env,
+      shell: useShell,
       stdio: ["pipe", "pipe", "pipe"]
     });
 
@@ -175,7 +213,11 @@ export class CodexAppServerClient {
     });
 
     child.on("error", (error) => {
-      this.logger.error(`[codex] process error: ${error.message}`);
+      const hint =
+        error.code === "ENOENT"
+          ? ` Codex CLI not found at "${rawCommand}". Install Codex or set CODEX_PATH to the full path of the codex executable.`
+          : "";
+      this.logger.error(`[codex] process error: ${error.message}${hint}`);
       if (this._startReject) {
         this._startReject(error);
         this._startReject = null;
