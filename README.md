@@ -11,7 +11,7 @@ Minimal **Anthropic Messages API** gateway that talks to your local `codex app-s
 **Option A — global (recommended)**
 
 ```bash
-git clone https://github.com/your-org/codex2cc.git
+git clone https://github.com/EgonexAI/codex2cc.git
 cd codex2cc
 npm install -g .
 ```
