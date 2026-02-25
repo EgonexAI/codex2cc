@@ -34,13 +34,28 @@ If not installed globally: `npx codex2cc start`
 
 **2. Set env and use Claude** (other terminal or IDE):
 
+macOS / Linux:
+
 ```bash
 export ANTHROPIC_BASE_URL=http://127.0.0.1:8080
 export ANTHROPIC_API_KEY=dummy
 claude --setting-sources local
 ```
 
-If `~/.claude/settings.json` overrides the URL, run Claude with `--setting-sources local`.
+Windows (recommended): edit `%USERPROFILE%\.claude\settings.json`
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8080",
+    "ANTHROPIC_API_KEY": "dummy"
+  }
+}
+```
+
+Then run `claude`.
+
+If your user settings (`~/.claude/settings.json`, Windows: `%USERPROFILE%\.claude\settings.json`) overrides the URL, run Claude with `--setting-sources local`.
 
 ## Options
 
